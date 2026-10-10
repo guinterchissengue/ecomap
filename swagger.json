@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
-      "description": "Local Development Server"
+      "url": "https://ecomap-42l8.onrender.com",
+      "description": "Production Server (Render)"
     },
     {
-      "url": "https://YOUR-RENDER-SERVICE.onrender.com",
-      "description": "Production Server (Render)"
+      "url": "http://localhost:3000",
+      "description": "Local Development Server"
     }
   ],
   "tags": [
@@ -223,10 +223,38 @@
           "email": { "type": "string" },
           "neighborhood": { "type": "string" },
           "role": { "type": "string", "enum": ["citizen", "administrator"] },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
         }
       },
       "Report": {
         "type": "object",
         "properties": {
-          "_id
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "category": { "type": "string" },
+          "location": {
+            "type": "object",
+            "properties": {
+              "neighborhood": { "type": "string" },
+              "address": { "type": "string" },
+              "coordinates": { "type": "array", "items": { "type": "number" } }
+            }
+          },
+          "status": { "type": "string", "enum": ["pending", "in_progress", "resolved"] },
+          "reportedBy": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string", "example": "Detailed error message goes here." }
+        }
+      }
+    }
+  }
+}
