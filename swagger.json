@@ -1,0 +1,232 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "EcoMap API",
+    "description": "Environmental Problem Reporting and Monitoring API for communities in Mozambique.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://YOUR-RENDER-SERVICE.onrender.com",
+      "description": "Production Server (Render)"
+    }
+  ],
+  "tags": [
+    { "name": "Users", "description": "Endpoints to manage community users" },
+    { "name": "Reports", "description": "Endpoints to manage environmental reports" }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Retrieve all users",
+        "responses": {
+          "200": {
+            "description": "A list of users",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "neighborhood"],
+                "properties": {
+                  "name": { "type": "string", "example": "Guinter Chissengue" },
+                  "email": { "type": "string", "example": "guinter@example.com" },
+                  "neighborhood": { "type": "string", "example": "Maxixe" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created successfully" },
+          "400": { "description": "Validation error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } },
+          "409": { "description": "Email already exists", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Retrieve a single user by ID",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" }, "description": "User ObjectId" }
+        ],
+        "responses": {
+          "200": { "description": "User retrieved successfully" },
+          "400": { "description": "Invalid ID format" },
+          "404": { "description": "User not found" }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update an existing user",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" }, "description": "User ObjectId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Guinter S. Chissengue" },
+                  "neighborhood": { "type": "string", "example": "Maputo" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "User updated successfully" },
+          "400": { "description": "Invalid input or ID format" },
+          "404": { "description": "User not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete a user",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" }, "description": "User ObjectId" }
+        ],
+        "responses": {
+          "204": { "description": "User deleted successfully (No Content)" },
+          "404": { "description": "User not found" },
+          "409": { "description": "Conflict: User has associated reports" }
+        }
+      }
+    },
+    "/reports": {
+      "get": {
+        "tags": ["Reports"],
+        "summary": "Retrieve all environmental reports",
+        "responses": {
+          "200": {
+            "description": "A list of reports",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Report" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Reports"],
+        "summary": "Create a new environmental report",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "description", "category", "location", "reportedBy"],
+                "properties": {
+                  "title": { "type": "string", "example": "Massive trash pile on corner" },
+                  "description": { "type": "string", "example": "Construction debris and plastic bags blocking the sidewalk." },
+                  "category": { "type": "string", "enum": ["illegal_dumping", "blocked_drain", "water_pollution", "air_pollution", "burning", "illegal_tree_cutting", "other"], "example": "illegal_dumping" },
+                  "location": {
+                    "type": "object",
+                    "properties": {
+                      "neighborhood": { "type": "string", "example": "Polana Cimento" },
+                      "address": { "type": "string", "example": "Av. Julius Nyerere, near the bank" },
+                      "coordinates": { "type": "array", "items": { "type": "number" }, "example": [32.5892, -25.9692] }
+                    }
+                  },
+                  "reportedBy": { "type": "string", "description": "Valid User ObjectId", "example": "60d5ec49f1b2c8b1f8e4e1a1" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Report created successfully" },
+          "400": { "description": "Validation error or invalid reportedBy ID" }
+        }
+      }
+    },
+    "/reports/{id}": {
+      "get": {
+        "tags": ["Reports"],
+        "summary": "Retrieve a single report by ID",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" }, "description": "Report ObjectId" }
+        ],
+        "responses": {
+          "200": { "description": "Report retrieved successfully" },
+          "400": { "description": "Invalid ID format" },
+          "404": { "description": "Report not found" }
+        }
+      },
+      "put": {
+        "tags": ["Reports"],
+        "summary": "Update an existing report",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" }, "description": "Report ObjectId" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string", "enum": ["pending", "in_progress", "resolved"], "example": "in_progress" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Report updated successfully" },
+          "400": { "description": "Invalid input or ID format" },
+          "404": { "description": "Report not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Reports"],
+        "summary": "Delete a report",
+        "parameters": [
+          { "in": "path", "name": "id", "required": true, "schema": { "type": "string" }, "description": "Report ObjectId" }
+        ],
+        "responses": {
+          "204": { "description": "Report deleted successfully (No Content)" },
+          "404": { "description": "Report not found" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "neighborhood": { "type": "string" },
+          "role": { "type": "string", "enum": ["citizen", "administrator"] },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Report": {
+        "type": "object",
+        "properties": {
+          "_id
