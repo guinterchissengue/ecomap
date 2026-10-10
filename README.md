@@ -18,5 +18,23 @@ EcoMap is an environmental problem reporting and monitoring API designed to help
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/ecomap.git](https://github.com/YOUR_USERNAME/ecomap.git)
+   git clone https://github.com/guinterchissengue/ecomap.git
    cd ecomap
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Configure environment variables:** create a `.env` file with `PORT`, `NODE_ENV` and `MONGODB_URI`.
+4. **Run the server:**
+   ```bash
+   npm run dev
+   ```
+5. **Run the tests:**
+   ```bash
+   npm test
+   ```
+
+## Live API and Documentation
+* Swagger UI: https://ecomap-wcp2.onrender.com/api-docs (the root URL redirects here)
+* Health check: https://ecomap-wcp2.onrender.com/health

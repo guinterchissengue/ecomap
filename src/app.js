@@ -10,6 +10,9 @@ import { errorhandler } from './middleware/errorhandler.js';
 
 const app = express();
 
+// render sits behind a https proxy
+app.set('trust proxy', 1);
+
 // resolve paths for es modules to read the swagger.json file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,8 +36,13 @@ const swaggerOptions = {
 // setup swagger ui documentation route with cdn assets to prevent blank screen on render
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
 
-// basic health check route to verify deployment status
+// the live url opens the swagger documentation directly
 app.get('/', (req, res) => {
+    res.redirect('/api-docs');
+});
+
+// basic health check route to verify deployment status
+app.get('/health', (req, res) => {
     res.status(200).json({ success: true, message: 'welcome to the ecomap api' });
 });
 
