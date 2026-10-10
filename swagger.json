@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://ecomap-42l8.onrender.com",
+      "url": "https://ecomap-wcp2.onrender.com",
       "description": "Production Server (Render)"
     },
     {
