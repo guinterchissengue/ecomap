@@ -21,8 +21,17 @@ app.use(express.json());
 // enable cross-origin resource sharing
 app.use(cors());
 
-// setup swagger ui documentation route
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// custom options for swagger ui behind render https proxy
+const swaggerOptions = {
+    customCssUrl: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui.min.css',
+    customJs: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui-bundle.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.0.0/swagger-ui-standalone-preset.js'
+    ]
+};
+
+// setup swagger ui documentation route with cdn assets to prevent blank screen on render
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
 
 // basic health check route to verify deployment status
 app.get('/', (req, res) => {
