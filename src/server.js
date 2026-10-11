@@ -1,9 +1,7 @@
-import dotenv from 'dotenv';
+// load environment variables first, before app.js reads them (es module imports are hoisted)
+import 'dotenv/config';
 import app from './app.js';
 import { connectdb } from './config/database.js';
-
-// load environment variables from .env file
-dotenv.config();
 
 const port = process.env.PORT || 3000;
 

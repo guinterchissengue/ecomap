@@ -11,3 +11,13 @@ services:
         value: 10000
       - key: MONGODB_URI
         sync: false # You MUST set this secret manually in the Render dashboard
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_CALLBACK_URL
+        value: https://ecomap-wcp2.onrender.com/auth/github/callback
+      - key: ADMIN_GITHUB_USERS
+        sync: false

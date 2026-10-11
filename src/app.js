@@ -4,6 +4,13 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import swaggerUi from 'swagger-ui-express';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import { configurepassport } from './config/passport.js';
+import authroutes from './routes/authroutes.js';
+import cleanupsroutes from './routes/cleanupsroutes.js';
+import commentsroutes from './routes/commentsroutes.js';
 import usersroutes from './routes/usersroutes.js';
 import reportsroutes from './routes/reportsroutes.js';
 import { errorhandler } from './middleware/errorhandler.js';
@@ -23,6 +30,27 @@ app.use(express.json());
 
 // enable cross-origin resource sharing
 app.use(cors());
+
+// sessions keep the user logged in after github oauth, stored in mongodb outside of tests
+const isproduction = process.env.NODE_ENV === 'production';
+if (isproduction && !process.env.SESSION_SECRET) {
+    throw new Error('SESSION_SECRET must be set in production');
+}
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'development-only-secret',
+    resave: false,
+    saveUninitialized: false,
+    store: process.env.NODE_ENV === 'test' ? undefined : MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+    cookie: {
+        httpOnly: true,
+        secure: isproduction, // https only on render (trust proxy is enabled above)
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
+configurepassport();
+app.use(passport.initialize());
+app.use(passport.session());
 
 // custom options for swagger ui behind render https proxy
 const swaggerOptions = {
@@ -47,8 +75,11 @@ app.get('/health', (req, res) => {
 });
 
 // mount application routes
+app.use('/auth', authroutes);
 app.use('/users', usersroutes);
 app.use('/reports', reportsroutes);
+app.use('/cleanups', cleanupsroutes);
+app.use('/comments', commentsroutes);
 
 // route not found handler
 app.use((req, res, next) => {
