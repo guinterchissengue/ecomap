@@ -31,7 +31,7 @@ app.use(express.json());
 // enable cross-origin resource sharing
 app.use(cors());
 
-// sessions keep the user logged in after google oauth, stored in mongodb outside of tests
+// sessions keep the user logged in after github oauth, stored in mongodb outside of tests
 const isproduction = process.env.NODE_ENV === 'production';
 if (isproduction && !process.env.SESSION_SECRET) {
     throw new Error('SESSION_SECRET must be set in production');

@@ -23,8 +23,8 @@ describe('protected routes require authentication (401)', () => {
         expect(res.statusCode).toBe(401);
     });
 
-    it('GET /auth/google answers 503 when oauth credentials are not configured', async () => {
-        const res = await request(app).get('/auth/google');
+    it('GET /auth/github answers 503 when oauth credentials are not configured', async () => {
+        const res = await request(app).get('/auth/github');
         expect(res.statusCode).toBe(503);
     });
 });

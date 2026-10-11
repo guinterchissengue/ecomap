@@ -12,7 +12,7 @@ EcoMap is an environmental problem reporting and monitoring API designed to help
 * **MongoDB Atlas & Mongoose:** Cloud database and Object Data Modeling (ODM).
 * **Swagger UI (OpenAPI 3.0):** Interactive API documentation.
 * **Render:** Cloud hosting and deployment platform.
-* **Passport (Google OAuth 2.0) & express-session:** Authentication, sessions stored in MongoDB.
+* **Passport (GitHub OAuth) & express-session:** Authentication, sessions stored in MongoDB.
 * **Jest & Supertest:** Automated testing framework.
 
 ## Installation and Local Setup
@@ -26,7 +26,7 @@ EcoMap is an environmental problem reporting and monitoring API designed to help
    ```bash
    npm install
    ```
-3. **Configure environment variables:** copy `.env.example` to `.env` and fill in `MONGODB_URI`, `SESSION_SECRET`, the Google OAuth credentials and `ADMIN_EMAILS`.
+3. **Configure environment variables:** copy `.env.example` to `.env` and fill in `MONGODB_URI`, `SESSION_SECRET`, the GitHub OAuth credentials and `ADMIN_GITHUB_USERS`.
 4. **Run the server:**
    ```bash
    npm run dev
@@ -46,11 +46,11 @@ EcoMap is an environmental problem reporting and monitoring API designed to help
 
 All POST and PUT routes validate the body and answer `400` with a clear message when requirements are not met (`401` not logged in, `403` not the owner, `404` not found, `409` conflict).
 
-## Authentication (Google OAuth 2.0)
-1. Create an OAuth client in Google Cloud Console (Web application).
-2. Add the authorized redirect URIs `http://localhost:3000/auth/google/callback` and `https://ecomap-wcp2.onrender.com/auth/google/callback`.
+## Authentication (GitHub OAuth)
+1. On GitHub: Settings → Developer settings → OAuth Apps → New OAuth App (use one app for Render and another for localhost).
+2. Homepage URL `https://ecomap-wcp2.onrender.com` and authorization callback URL `https://ecomap-wcp2.onrender.com/auth/github/callback` (locally: `http://localhost:3000/auth/github/callback`).
 3. Put the client id/secret in `.env` locally and in the Render dashboard.
-4. Open `/auth/google` in the browser to log in. The session cookie unlocks the protected routes, including Swagger "Try it out". `/auth/me` shows who you are and `/auth/logout` ends the session.
+4. Open `/auth/github` in the browser to log in. The session cookie unlocks the protected routes, including Swagger "Try it out". `/auth/me` shows who you are and `/auth/logout` ends the session.
 
 ## Tests
 `npm test` runs the Jest unit tests (models are mocked, no database needed): GET and GET-by-id for all four collections, `401` on every protected route, and the data validation rules.

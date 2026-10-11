@@ -27,7 +27,7 @@ export const getuserbyid = async (req, res, next) => {
     }
 };
 
-// create a new user (administrators only, regular users are created by signing in with google)
+// create a new user (administrators only, regular users are created by signing in with github)
 export const createuser = async (req, res, next) => {
     try {
         const newuser = await User.create(req.body);

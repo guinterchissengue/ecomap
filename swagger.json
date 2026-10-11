@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "EcoMap API",
-    "description": "Environmental Problem Reporting and Monitoring API for communities in Mozambique. Four collections: Users, Reports, Cleanups, Comments. To use the protected POST/PUT/DELETE routes, first log in by opening /auth/google in the browser (Google OAuth); the session cookie is then sent automatically by Try it out.",
+    "description": "Environmental Problem Reporting and Monitoring API for communities in Mozambique. Four collections: Users, Reports, Cleanups, Comments. To use the protected POST/PUT/DELETE routes, first log in by opening /auth/github in the browser (GitHub OAuth); the session cookie is then sent automatically by Try it out.",
     "version": "2.0.0"
   },
   "servers": [
@@ -18,7 +18,7 @@
   "tags": [
     {
       "name": "Auth",
-      "description": "Google OAuth login and session"
+      "description": "GitHub OAuth login and session"
     },
     {
       "name": "Users",
@@ -38,16 +38,16 @@
     }
   ],
   "paths": {
-    "/auth/google": {
+    "/auth/github": {
       "get": {
         "tags": [
           "Auth"
         ],
-        "summary": "Log in with Google (open this URL in the browser, not with Try it out)",
-        "description": "Starts the Google OAuth 2.0 flow. After approving, you are redirected back to /api-docs with a session cookie, and the protected routes (POST/PUT/DELETE) unlock.",
+        "summary": "Log in with GitHub (open this URL in the browser, not with Try it out)",
+        "description": "Starts the GitHub OAuth 2.0 flow. After approving, you are redirected back to /api-docs with a session cookie, and the protected routes (POST/PUT/DELETE) unlock.",
         "responses": {
           "302": {
-            "description": "Redirect to Google"
+            "description": "Redirect to GitHub"
           },
           "503": {
             "description": "OAuth not configured on the server",
@@ -85,7 +85,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -146,7 +146,7 @@
         "tags": [
           "Users"
         ],
-        "summary": "Create a new user (administrators only; regular users are created by logging in with Google)",
+        "summary": "Create a new user (administrators only; regular users are created by logging in with GitHub)",
         "security": [
           {
             "cookieAuth": []
@@ -211,7 +211,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -360,7 +360,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -437,7 +437,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -608,7 +608,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -781,7 +781,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -848,7 +848,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -987,7 +987,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -1133,7 +1133,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -1200,7 +1200,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -1320,7 +1320,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -1441,7 +1441,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -1508,7 +1508,7 @@
             }
           },
           "401": {
-            "description": "Not logged in. Open /auth/google in the browser first",
+            "description": "Not logged in. Open /auth/github in the browser first",
             "content": {
               "application/json": {
                 "schema": {
@@ -1718,7 +1718,7 @@
         "type": "apiKey",
         "in": "cookie",
         "name": "connect.sid",
-        "description": "Session cookie created by logging in at /auth/google. The browser sends it automatically."
+        "description": "Session cookie created by logging in at /auth/github. The browser sends it automatically."
       }
     }
   }

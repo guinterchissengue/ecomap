@@ -1,11 +1,11 @@
-// require an authenticated session (set by google oauth) before reaching a route
+// require an authenticated session (set by github oauth) before reaching a route
 export const ensureauth = (req, res, next) => {
     if (req.isAuthenticated && req.isAuthenticated()) {
         return next();
     }
     res.status(401).json({
         success: false,
-        message: 'authentication required, please log in at /auth/google'
+        message: 'authentication required, please log in at /auth/github'
     });
 };
 

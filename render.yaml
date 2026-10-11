@@ -13,11 +13,11 @@ services:
         sync: false # You MUST set this secret manually in the Render dashboard
       - key: SESSION_SECRET
         generateValue: true
-      - key: GOOGLE_CLIENT_ID
+      - key: GITHUB_CLIENT_ID
         sync: false
-      - key: GOOGLE_CLIENT_SECRET
+      - key: GITHUB_CLIENT_SECRET
         sync: false
-      - key: GOOGLE_CALLBACK_URL
-        value: https://ecomap-wcp2.onrender.com/auth/google/callback
-      - key: ADMIN_EMAILS
+      - key: GITHUB_CALLBACK_URL
+        value: https://ecomap-wcp2.onrender.com/auth/github/callback
+      - key: ADMIN_GITHUB_USERS
         sync: false

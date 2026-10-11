@@ -1,29 +1,29 @@
 import express from 'express';
 import passport from 'passport';
-import { googleconfigured } from '../config/passport.js';
+import { githubconfigured } from '../config/passport.js';
 import { ensureauth } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// refuse the oauth routes with a clear message when google credentials are missing
-const requiregoogle = (req, res, next) => {
-    if (!googleconfigured()) {
-        return res.status(503).json({ success: false, message: 'google oauth is not configured on this server' });
+// refuse the oauth routes with a clear message when github credentials are missing
+const requiregithub = (req, res, next) => {
+    if (!githubconfigured()) {
+        return res.status(503).json({ success: false, message: 'github oauth is not configured on this server' });
     }
     next();
 };
 
-// start the google login flow
-router.get('/google', requiregoogle, passport.authenticate('google', { scope: ['profile', 'email'] }));
+// start the github login flow
+router.get('/github', requiregithub, passport.authenticate('github', { scope: ['user:email'] }));
 
-// google redirects back here after the user approves
-router.get('/google/callback', requiregoogle,
-    passport.authenticate('google', { failureRedirect: '/auth/failure' }),
+// github redirects back here after the user approves
+router.get('/github/callback', requiregithub,
+    passport.authenticate('github', { failureRedirect: '/auth/failure' }),
     (req, res) => res.redirect('/api-docs')
 );
 
 router.get('/failure', (req, res) => {
-    res.status(401).json({ success: false, message: 'google authentication failed' });
+    res.status(401).json({ success: false, message: 'github authentication failed' });
 });
 
 // return the logged in user (useful to confirm the session in the video)

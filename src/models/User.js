@@ -20,8 +20,8 @@ const userschema = new mongoose.Schema({
         required: [true, 'neighborhood is required'],
         trim: true
     },
-    // google account id, set when the user signs in through oauth
-    googleId: {
+    // github account id, set when the user signs in through oauth
+    githubId: {
         type: String,
         unique: true,
         sparse: true,

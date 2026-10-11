@@ -29,7 +29,7 @@ const checkvalue = (field, value, rule) => {
 };
 
 // build a middleware that validates req.body for post (all required fields) or put (partial update)
-// unknown fields are dropped so clients cannot set protected fields such as organizer or googleId
+// unknown fields are dropped so clients cannot set protected fields such as organizer or githubId
 export const validatebody = (rules, { partial = false } = {}) => (req, res, next) => {
     const body = req.body;
     if (!body || typeof body !== 'object' || Array.isArray(body)) {
