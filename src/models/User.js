@@ -20,6 +20,13 @@ const userschema = new mongoose.Schema({
         required: [true, 'neighborhood is required'],
         trim: true
     },
+    // google account id, set when the user signs in through oauth
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true,
+        select: false
+    },
     role: {
         type: String,
         enum: ['citizen', 'administrator'],

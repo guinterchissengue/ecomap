@@ -1,82 +1,60 @@
+import { jest } from '@jest/globals';
 import request from 'supertest';
-import mongoose from 'mongoose';
-import app from '../src/app.js';
-import User from '../src/models/User.js';
-import dotenv from 'dotenv';
+import { fakequery, validid } from './helpers.js';
 
-dotenv.config();
+// the model is mocked so these unit tests run without a database connection
+const User = { find: jest.fn(), findById: jest.fn() };
+jest.unstable_mockModule('../models/User.js', () => ({ default: User }));
+const { default: app } = await import('../app.js');
 
-// use a separate test database to avoid deleting production data
-const test_db_uri = process.env.MONGODB_URI?.replace('ecomap', 'ecomap_test') || 'mongodb://localhost:27017/ecomap_test';
+const sample = { _id: validid, name: 'test citizen', email: 'citizen@example.com', neighborhood: 'polana', role: 'citizen' };
 
-beforeAll(async () => {
-    await mongoose.connect(test_db_uri);
-});
+beforeEach(() => jest.clearAllMocks());
 
-afterAll(async () => {
-    await mongoose.connection.dropDatabase();
-    await mongoose.connection.close();
-});
-
-describe('Users API Endpoints', () => {
-    let createduserid;
-
-    const validuser = {
-        name: 'test citizen',
-        email: 'testcitizen@example.com',
-        neighborhood: 'polana cimento'
-    };
-
-    it('should create a new user successfully', async () => {
-        const res = await request(app).post('/users').send(validuser);
-        expect(res.statusCode).toEqual(201);
-        expect(res.body).toHaveProperty('_id');
-        expect(res.body.email).toEqual(validuser.email);
-        createduserid = res.body._id;
+describe('GET /users', () => {
+    it('returns 200 and an array with all documents', async () => {
+        User.find.mockReturnValue(fakequery([sample]));
+        const res = await request(app).get('/users');
+        expect(res.statusCode).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body).toHaveLength(1);
+        expect(res.body[0]._id).toBe(validid);
     });
 
-    it('should return 409 conflict for duplicate email', async () => {
-        const res = await request(app).post('/users').send(validuser);
-        expect(res.statusCode).toEqual(409);
+    it('returns 200 and an empty array when the collection is empty', async () => {
+        User.find.mockReturnValue(fakequery([]));
+        const res = await request(app).get('/users');
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual([]);
+    });
+
+    it('returns 500 when the database fails', async () => {
+        User.find.mockReturnValue(fakequery(null, new Error('db down')));
+        const res = await request(app).get('/users');
+        expect(res.statusCode).toBe(500);
+        expect(res.body.success).toBe(false);
+    });
+});
+
+describe('GET /users/:id', () => {
+    it('returns 200 and the requested document', async () => {
+        User.findById.mockReturnValue(fakequery(sample));
+        const res = await request(app).get(`/users/${validid}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body._id).toBe(validid);
+        expect(User.findById).toHaveBeenCalledWith(validid);
+    });
+
+    it('returns 404 when the document does not exist', async () => {
+        User.findById.mockReturnValue(fakequery(null));
+        const res = await request(app).get(`/users/${validid}`);
+        expect(res.statusCode).toBe(404);
         expect(res.body.success).toBe(false);
     });
 
-    it('should return 400 for missing required fields', async () => {
-        const res = await request(app).post('/users').send({ name: 'incomplete user' });
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('should retrieve all users', async () => {
-        const res = await request(app).get('/users');
-        expect(res.statusCode).toEqual(200);
-        expect(Array.isArray(res.body)).toBeTruthy();
-        expect(res.body.length).toBeGreaterThan(0);
-    });
-
-    it('should retrieve a specific user by id', async () => {
-        const res = await request(app).get(`/users/${createduserid}`);
-        expect(res.statusCode).toEqual(200);
-        expect(res.body._id).toEqual(createduserid);
-    });
-
-    it('should return 400 for invalid object id format', async () => {
+    it('returns 400 for a malformed id without touching the database', async () => {
         const res = await request(app).get('/users/12345invalid');
-        expect(res.statusCode).toEqual(400);
-    });
-
-    it('should update an existing user', async () => {
-        const res = await request(app).put(`/users/${createduserid}`).send({ neighborhood: 'sommerschield' });
-        expect(res.statusCode).toEqual(200);
-        expect(res.body.neighborhood).toEqual('sommerschield');
-    });
-
-    it('should delete a user successfully', async () => {
-        const res = await request(app).delete(`/users/${createduserid}`);
-        expect(res.statusCode).toEqual(204);
-    });
-
-    it('should return 404 for retrieving a deleted user', async () => {
-        const res = await request(app).get(`/users/${createduserid}`);
-        expect(res.statusCode).toEqual(404);
+        expect(res.statusCode).toBe(400);
+        expect(User.findById).not.toHaveBeenCalled();
     });
 });

@@ -1,5 +1,7 @@
 import Report from '../models/Report.js';
-import User from '../models/User.js';
+import Cleanup from '../models/Cleanup.js';
+import Comment from '../models/Comment.js';
+import { isowneroradmin } from '../middleware/auth.js';
 
 // retrieve all reports
 export const getallreports = async (req, res, next) => {
@@ -24,47 +26,55 @@ export const getreportbyid = async (req, res, next) => {
     }
 };
 
-// create a new environmental report
+// create a new environmental report, the reporter is always the logged in user
 export const createreport = async (req, res, next) => {
     try {
-        // verify that the reporting user actually exists
-        const user = await User.findById(req.body.reportedBy);
-        if (!user) {
-            return res.status(400).json({ success: false, message: 'invalid reporting user reference' });
-        }
-
-        const newreport = await Report.create(req.body);
+        const newreport = await Report.create({ ...req.body, reportedBy: req.user._id });
         res.status(201).json(newreport);
     } catch (error) {
         next(error);
     }
 };
 
-// update an existing report (e.g., changing status to in_progress)
+// update an existing report (owner or administrator, only administrators may change the status)
 export const updatereport = async (req, res, next) => {
     try {
-        const report = await Report.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
-
+        const report = await Report.findById(req.params.id);
         if (!report) {
             return res.status(404).json({ success: false, message: 'report not found' });
         }
+        if (!isowneroradmin(req.user, report.reportedBy)) {
+            return res.status(403).json({ success: false, message: 'you can only update your own reports' });
+        }
+        if (req.body.status !== undefined && req.user.role !== 'administrator') {
+            return res.status(403).json({ success: false, message: 'only administrators can change the report status' });
+        }
+
+        report.set(req.body);
+        await report.save();
         res.status(200).json(report);
     } catch (error) {
         next(error);
     }
 };
 
-// delete an existing report
+// delete an existing report (owner or administrator)
 export const deletereport = async (req, res, next) => {
     try {
-        const report = await Report.findByIdAndDelete(req.params.id);
+        const report = await Report.findById(req.params.id);
         if (!report) {
             return res.status(404).json({ success: false, message: 'report not found' });
         }
-        // return 204 no content on successful deletion
+        if (!isowneroradmin(req.user, report.reportedBy)) {
+            return res.status(403).json({ success: false, message: 'you can only delete your own reports' });
+        }
+
+        // remove dependent documents so nothing points to a missing report
+        await Promise.all([
+            Cleanup.deleteMany({ report: report._id }),
+            Comment.deleteMany({ report: report._id })
+        ]);
+        await report.deleteOne();
         res.status(204).send();
     } catch (error) {
         next(error);
