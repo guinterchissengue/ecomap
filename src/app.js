@@ -8,6 +8,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import { configurepassport } from './config/passport.js';
+import { bearerauth } from './middleware/bearer.js';
 import authroutes from './routes/authroutes.js';
 import cleanupsroutes from './routes/cleanupsroutes.js';
 import commentsroutes from './routes/commentsroutes.js';
@@ -51,6 +52,7 @@ app.use(session({
 configurepassport();
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(bearerauth);
 
 // custom options for swagger ui behind render https proxy
 const swaggerOptions = {

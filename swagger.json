@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "EcoMap API",
-    "description": "Environmental Problem Reporting and Monitoring API for communities in Mozambique. Four collections: Users, Reports, Cleanups, Comments. To use the protected POST/PUT/DELETE routes, first log in by opening /auth/github in the browser (GitHub OAuth); the session cookie is then sent automatically by Try it out.",
+    "description": "Environmental Problem Reporting and Monitoring API for communities in Mozambique. Four collections: Users, Reports, Cleanups, Comments. To use the protected POST/PUT/DELETE routes, log in with GitHub OAuth at /auth/github; you are shown a token. Click Authorize and paste the token in the bearerAuth Value field.",
     "version": "2.0.0"
   },
   "servers": [
@@ -69,6 +69,9 @@
         ],
         "summary": "Show the logged in user",
         "security": [
+          {
+            "bearerAuth": []
+          },
           {
             "cookieAuth": []
           }
@@ -148,6 +151,9 @@
         ],
         "summary": "Create a new user (administrators only; regular users are created by logging in with GitHub)",
         "security": [
+          {
+            "bearerAuth": []
+          },
           {
             "cookieAuth": []
           }
@@ -300,6 +306,9 @@
         "summary": "Update a user (the user themself or an administrator; role cannot be changed)",
         "security": [
           {
+            "bearerAuth": []
+          },
+          {
             "cookieAuth": []
           }
         ],
@@ -407,6 +416,9 @@
         ],
         "summary": "Delete a user (login required)",
         "security": [
+          {
+            "bearerAuth": []
+          },
           {
             "cookieAuth": []
           }
@@ -517,6 +529,9 @@
         ],
         "summary": "Create a new report (login required, the reporter is the logged in user)",
         "security": [
+          {
+            "bearerAuth": []
+          },
           {
             "cookieAuth": []
           }
@@ -677,6 +692,9 @@
         "summary": "Update a report (owner or administrator; only administrators can change status)",
         "security": [
           {
+            "bearerAuth": []
+          },
+          {
             "cookieAuth": []
           }
         ],
@@ -819,6 +837,9 @@
         "summary": "Delete a report and its cleanups and comments (owner or administrator)",
         "security": [
           {
+            "bearerAuth": []
+          },
+          {
             "cookieAuth": []
           }
         ],
@@ -918,6 +939,9 @@
         ],
         "summary": "Create a cleanup event for a report (login required, the organizer is the logged in user)",
         "security": [
+          {
+            "bearerAuth": []
+          },
           {
             "cookieAuth": []
           }
@@ -1056,6 +1080,9 @@
         "summary": "Update a cleanup (organizer or administrator)",
         "security": [
           {
+            "bearerAuth": []
+          },
+          {
             "cookieAuth": []
           }
         ],
@@ -1171,6 +1198,9 @@
         "summary": "Delete a cleanup (login required)",
         "security": [
           {
+            "bearerAuth": []
+          },
+          {
             "cookieAuth": []
           }
         ],
@@ -1270,6 +1300,9 @@
         ],
         "summary": "Add a comment to a report (login required, the author is the logged in user)",
         "security": [
+          {
+            "bearerAuth": []
+          },
           {
             "cookieAuth": []
           }
@@ -1389,6 +1422,9 @@
         "summary": "Edit a comment (author or administrator)",
         "security": [
           {
+            "bearerAuth": []
+          },
+          {
             "cookieAuth": []
           }
         ],
@@ -1479,6 +1515,9 @@
         "summary": "Delete a comment (login required)",
         "security": [
           {
+            "bearerAuth": []
+          },
+          {
             "cookieAuth": []
           }
         ],
@@ -1536,6 +1575,27 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/auth/token": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Show a token for the Authorize button (after GitHub login)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token to paste in Authorize"
+          },
+          "401": {
+            "description": "Not logged in"
           }
         }
       }
@@ -1719,6 +1779,12 @@
         "in": "cookie",
         "name": "connect.sid",
         "description": "Session cookie created by logging in at /auth/github. The browser sends it automatically."
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Log in with GitHub at /auth/github, copy the token shown at /auth/token and paste it here."
       }
     }
   }

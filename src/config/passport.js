@@ -26,6 +26,7 @@ export const configurepassport = () => {
         }
     });
 
+    // the strategy is only registered when credentials exist (keeps tests and local setup simple)
     if (!githubconfigured()) return;
 
     passport.use(new GitHubStrategy({
@@ -38,14 +39,13 @@ export const configurepassport = () => {
             // the email can be private on github, so fall back to the noreply address
             const email = (profile.emails?.[0]?.value || `${profile.username}@users.noreply.github.com`).toLowerCase();
 
+            // returning user, or an existing user created earlier with the same email
             let user = await User.findOne({ githubId: profile.id });
             if (!user) user = await User.findOne({ email });
 
             if (user) {
-                if (!user.githubId) {
-                    user.githubId = profile.id;
-                    await user.save();
-                }
+                // link the github id without re-validating the whole document (old documents may miss fields)
+                await User.updateOne({ _id: user._id }, { $set: { githubId: profile.id } });
             } else {
                 user = await User.create({
                     name: profile.displayName || profile.username,
